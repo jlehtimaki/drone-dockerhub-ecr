@@ -141,11 +141,11 @@ func commandLogin(login Login) *exec.Cmd {
 	if login.Email != "" {
 		return commandLoginEmail(login)
 	}
+	cmd := fmt.Sprintf(
+		"echo %s | %s login -u %s --password-stdin %s", login.Password, dockerdExe, login.Username, login.Registry,
+		)
 	return exec.Command(
-		dockerExe, "login",
-		"-u", login.Username,
-		"-p", login.Password,
-		login.Registry,
+		"bash", "-c", cmd,
 	)
 }
 
@@ -159,12 +159,11 @@ func commandPull(pull Pull) *exec.Cmd {
 }
 
 func commandLoginEmail(login Login) *exec.Cmd {
+	cmd := fmt.Sprintf(
+		"echo %s | %s login -u %s --password-stdin -e %s %s", login.Password, dockerdExe, login.Username, login.Registry, login.Email,
+	)
 	return exec.Command(
-		dockerExe, "login",
-		"-u", login.Username,
-		"-p", login.Password,
-		"-e", login.Email,
-		login.Registry,
+		"bash", "-c", cmd,
 	)
 }
 
