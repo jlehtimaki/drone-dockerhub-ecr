@@ -8,6 +8,7 @@ RUN go build -tags netgo ./cmd/drone-docker
 
 FROM docker:18.09.0-dind
 
+RUN apk add bash
 COPY --from=builder /build/drone-ecr /bin/
 COPY --from=builder /build/drone-docker /bin/
 
