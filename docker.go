@@ -141,12 +141,14 @@ func commandLogin(login Login) *exec.Cmd {
 	if login.Email != "" {
 		return commandLoginEmail(login)
 	}
-	cmd := fmt.Sprintf(
-		"echo %s | %s login -u %s --password-stdin %s", login.Password, dockerdExe, login.Username, login.Registry,
-		)
-	return exec.Command(
-		"bash", "-c", cmd,
+	cmd := exec.Command(
+		dockerExe, "login",
+		"-u", login.Username,
+		"--password-stdin",
+		login.Registry,
 	)
+	cmd.Stdin = strings.NewReader(login.Password)
+	return cmd
 }
 
 // helper to check if args match "docker pull <image>"
@@ -159,12 +161,15 @@ func commandPull(pull Pull) *exec.Cmd {
 }
 
 func commandLoginEmail(login Login) *exec.Cmd {
-	cmd := fmt.Sprintf(
-		"echo %s | %s login -u %s --password-stdin -e %s %s", login.Password, dockerdExe, login.Username, login.Registry, login.Email,
+	cmd := exec.Command(
+		dockerExe, "login",
+		"-u", login.Username,
+		"--password-stdin",
+		"-e", login.Email,
+		login.Registry,
 	)
-	return exec.Command(
-		"bash", "-c", cmd,
-	)
+	cmd.Stdin = strings.NewReader(login.Password)
+	return cmd
 }
 
 // helper function to create the docker info command.
